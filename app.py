@@ -114,159 +114,495 @@ HTML = """
 <html>
 <head>
 <title>Burnout AI</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{margin:0;font-family:system-ui;background:#0f172a;color:#e2e8f0}
 
-.container{max-width:1100px;margin:auto;padding:30px}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-h1{text-align:center;margin-bottom:10px}
+body{
+font-family:system-ui;
+background:#020617;
+color:#e2e8f0;
+overflow-x:hidden;
+}
+
+body::before{
+content:"";
+position:fixed;
+width:700px;
+height:700px;
+background:radial-gradient(circle,#2563eb33,transparent 70%);
+top:-250px;
+right:-250px;
+z-index:-1;
+animation:floatGlow 8s infinite alternate ease-in-out;
+}
+
+@keyframes floatGlow{
+from{transform:translateY(0)}
+to{transform:translateY(40px)}
+}
+
+.container{
+max-width:1300px;
+margin:auto;
+padding:40px 25px;
+animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+h1{
+text-align:center;
+font-size:52px;
+font-weight:800;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#94a3b8;
+margin-bottom:40px;
+font-size:17px;
+}
 
 .upload{
-display:block;
-max-width:600px;
-margin:20px auto;
-padding:50px;
-border:2px dashed #3b82f6;
-border-radius:12px;
-text-align:center;
-cursor:pointer;
-transition:0.3s;
-}
-.upload:hover{transform:scale(1.03);background:#020617}
-
-.switch-wrapper{display:flex;justify-content:center;margin:25px 0}
-
-.switch{
-position:relative;
-width:280px;
-height:45px;
-background:#020617;
-border-radius:30px;
 display:flex;
+justify-content:center;
 align-items:center;
+flex-direction:column;
+gap:12px;
+max-width:720px;
+margin:0 auto 40px;
+padding:65px;
+border:2px dashed #2563eb;
+border-radius:28px;
+background:rgba(15,23,42,0.85);
+backdrop-filter:blur(10px);
+cursor:pointer;
+transition:0.45s;
+position:relative;
 overflow:hidden;
 }
 
-.option{
-flex:1;
-text-align:center;
-z-index:2;
-cursor:pointer;
-color:#94a3b8;
-transition:0.3s;
+.upload::before{
+content:"";
+position:absolute;
+width:120%;
+height:120%;
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,255,255,0.08),
+transparent
+);
+transform:translateX(-100%);
+transition:0.8s;
 }
 
-.option.active{
-color:white;
-font-weight:600;
+.upload:hover::before{
+transform:translateX(100%);
+}
+
+.upload:hover{
+transform:translateY(-6px) scale(1.01);
+box-shadow:0 0 40px #2563eb55;
+}
+
+.switch-wrapper{
+display:flex;
+justify-content:center;
+margin:45px 0;
+}
+
+.switch{
+position:relative;
+width:430px;
+height:62px;
+background:#0f172a;
+border-radius:50px;
+padding:6px;
+display:flex;
+align-items:center;
+overflow:hidden;
+box-shadow:
+0 10px 30px rgba(0,0,0,0.45),
+inset 0 0 12px rgba(255,255,255,0.03);
 }
 
 .slider{
 position:absolute;
 width:50%;
-height:100%;
-background:#3b82f6;
-border-radius:30px;
-transition:all 0.35s ease;
-left:0;
+height:50px;
+left:6px;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+border-radius:40px;
+transition:0.45s cubic-bezier(.77,0,.18,1);
+box-shadow:0 12px 30px rgba(37,99,235,0.4);
 }
 
-.view-container{overflow:hidden}
+.option{
+flex:1;
+z-index:2;
+text-align:center;
+cursor:pointer;
+font-weight:600;
+font-size:15px;
+color:#94a3b8;
+transition:0.3s;
+user-select:none;
+}
+
+.option.active{
+color:white;
+}
+
+.view-container{
+overflow:hidden;
+width:100%;
+}
 
 .views{
 display:flex;
 width:200%;
-transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);
+transition:transform 0.6s cubic-bezier(.77,0,.18,1);
 }
 
-.screen{width:100%}
+.screen{
+width:100%;
+padding:10px;
+}
 
-.stats{display:flex;justify-content:center;gap:20px;margin-bottom:20px}
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;
+margin-bottom:35px;
+}
 
-.card{background:#020617;padding:15px;border-radius:10px;width:140px;text-align:center}
+.card{
+background:linear-gradient(145deg,#0f172a,#111827);
+padding:35px;
+border-radius:25px;
+text-align:center;
+border:1px solid #1e293b;
+transition:0.35s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 20px 40px rgba(0,0,0,0.35);
+}
+
+.card h2{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.chart-box{
+background:#0f172a;
+padding:30px;
+border-radius:25px;
+border:1px solid #1e293b;
+margin-bottom:40px;
+box-shadow:0 15px 40px rgba(0,0,0,0.25);
+}
+
+.table-section{
+margin-top:45px;
+}
+
+.table-title{
+font-size:26px;
+font-weight:700;
+margin-bottom:20px;
+}
 
 .table-box{
-max-height:300px;
+max-height:430px;
 overflow:auto;
-margin-top:20px;
+border-radius:20px;
 border:1px solid #1e293b;
-border-radius:10px
+background:#0f172a;
 }
 
-table{width:100%}
-td,th{padding:8px;text-align:center}
+.table-box::-webkit-scrollbar{
+width:10px;
+height:10px;
+}
 
-button{
-padding:10px 15px;
-background:#3b82f6;
+.table-box::-webkit-scrollbar-thumb{
+background:#2563eb;
+border-radius:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+position:sticky;
+top:0;
+background:#111827;
+z-index:2;
+}
+
+td,th{
+padding:14px;
+text-align:center;
+border-bottom:1px solid #1e293b;
+}
+
+tr{
+transition:0.2s;
+}
+
+tr:hover{
+background:#172554;
+}
+
+.recommend-section{
+margin-top:65px;
+}
+
+.recommend-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:22px;
+margin-top:25px;
+}
+
+.recommend-card{
+background:#0f172a;
+padding:25px;
+border-radius:22px;
+border:1px solid #1e293b;
+transition:0.35s;
+line-height:1.7;
+}
+
+.recommend-card:hover{
+transform:translateY(-5px);
+border-color:#2563eb;
+}
+
+.downloads{
+display:flex;
+gap:20px;
+margin-top:50px;
+flex-wrap:wrap;
+}
+
+.download-btn{
+padding:15px 24px;
 border:none;
-border-radius:6px;
+border-radius:14px;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+color:white;
+font-weight:600;
 cursor:pointer;
-transition:0.3s;
+transition:0.35s;
+font-size:15px;
+box-shadow:0 12px 30px rgba(37,99,235,0.35);
 }
-button:hover{transform:scale(1.05)}
+
+.download-btn:hover{
+transform:translateY(-4px) scale(1.02);
+box-shadow:0 20px 40px rgba(37,99,235,0.5);
+}
 
 #chat{
 position:fixed;
-bottom:20px;
-right:20px;
-background:#3b82f6;
-padding:14px;
+bottom:25px;
+right:25px;
+width:68px;
+height:68px;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
 border-radius:50%;
-cursor:pointer
+display:flex;
+justify-content:center;
+align-items:center;
+font-weight:700;
+cursor:pointer;
+transition:0.35s;
+box-shadow:0 18px 40px rgba(37,99,235,0.45);
+z-index:999;
+}
+
+#chat:hover{
+transform:scale(1.08);
 }
 
 #chatbox{
 position:fixed;
-bottom:80px;
-right:20px;
-width:320px;
-height:420px;
-background:#020617;
+bottom:105px;
+right:25px;
+width:360px;
+height:510px;
+background:#0f172a;
+border-radius:24px;
 display:none;
 flex-direction:column;
-border-radius:10px;
-border:1px solid #1e293b
+border:1px solid #1e293b;
+overflow:hidden;
+box-shadow:0 25px 60px rgba(0,0,0,0.45);
+z-index:999;
+animation:chatOpen 0.3s ease;
 }
 
-#chat-body{flex:1;overflow:auto;padding:10px}
+@keyframes chatOpen{
+from{
+opacity:0;
+transform:translateY(20px) scale(0.95);
+}
+to{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+}
+
+#chat-body{
+flex:1;
+overflow:auto;
+padding:18px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.msg{
+padding:12px 14px;
+border-radius:14px;
+max-width:85%;
+line-height:1.5;
+font-size:14px;
+animation:fadeIn 0.3s ease;
+}
+
+.user{
+background:#2563eb;
+align-self:flex-end;
+}
+
+.ai{
+background:#1e293b;
+align-self:flex-start;
+}
+
+.chat-input{
+display:flex;
+border-top:1px solid #1e293b;
+}
+
+.chat-input input{
+flex:1;
+padding:15px;
+background:#020617;
+border:none;
+outline:none;
+color:white;
+font-size:14px;
+}
+
+.chat-input button{
+width:80px;
+border:none;
+background:#2563eb;
+color:white;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+.chat-input button:hover{
+background:#3b82f6;
+}
+
 </style>
 
 <script>
+
 function switchView(index){
-document.getElementById("views").style.transform=`translateX(-${index*50}%)`
+
+document.getElementById("views").style.transform =
+`translateX(-${index*50}%)`
 
 let slider=document.getElementById("slider")
-slider.style.left=index===0?"0%":"50%"
+
+slider.style.left = index===0 ? "6px" : "50%"
 
 let options=document.querySelectorAll(".option")
+
 options.forEach(o=>o.classList.remove("active"))
+
 options[index].classList.add("active")
 }
 
 function toggleChat(){
+
 let c=document.getElementById("chatbox")
-c.style.display=c.style.display==="flex"?"none":"flex"
+
+c.style.display = c.style.display==="flex" ? "none" : "flex"
 }
 
 function sendMessage(){
+
 let i=document.getElementById("chat_text")
+
 let m=i.value.trim()
+
 if(!m)return
 
 let b=document.getElementById("chat-body")
-b.innerHTML+=`<div>${m}</div>`
 
-fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:m})})
-.then(r=>r.json()).then(d=>{
-b.innerHTML+=`<div>${d.reply}</div>`
+b.innerHTML += `
+<div class='msg user'>${m}</div>
+`
+
+let t=document.createElement("div")
+
+t.className="msg ai"
+
+t.innerHTML="Analyzing dataset..."
+
+b.appendChild(t)
+
+b.scrollTop=b.scrollHeight
+
+fetch("/chat",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+message:m
+})
+})
+.then(r=>r.json())
+.then(d=>{
+t.innerHTML=d.reply
 b.scrollTop=b.scrollHeight
 })
 
 i.value=""
 }
+
 </script>
 </head>
 
@@ -276,103 +612,319 @@ i.value=""
 
 <h1>Burnout AI</h1>
 
+<p class="subtitle">
+Advanced AI-powered burnout detection, productivity analytics, and intelligent workforce insights
+</p>
+
 <form method="POST" enctype="multipart/form-data">
+
 <label class="upload">
-Upload Dataset
+
+<h2>Upload Dataset</h2>
+
+<p style="color:#94a3b8">
+Drag and analyze workforce productivity & burnout datasets
+</p>
+
 <input type="file" name="file" hidden onchange="this.form.submit()">
+
 </label>
+
 </form>
 
 <div class="switch-wrapper">
+
 <div class="switch">
+
 <div class="slider" id="slider"></div>
-<div class="option active" onclick="switchView(0)">Burnout</div>
-<div class="option" onclick="switchView(1)">Productivity</div>
+
+<div class="option active" onclick="switchView(0)">
+Burnout Analytics
 </div>
+
+<div class="option" onclick="switchView(1)">
+Productivity Insights
+</div>
+
+</div>
+
 </div>
 
 <div class="view-container">
+
 <div class="views" id="views">
 
 <div class="screen">
+
 {% if stats %}
+
 <div class="stats">
-<div class="card">High<br>{{stats.high}}</div>
-<div class="card">Medium<br>{{stats.medium}}</div>
-<div class="card">Low<br>{{stats.low}}</div>
+
+<div class="card">
+<h2>{{stats.high}}</h2>
+<p>High Burnout</p>
 </div>
+
+<div class="card">
+<h2>{{stats.medium}}</h2>
+<p>Medium Burnout</p>
+</div>
+
+<div class="card">
+<h2>{{stats.low}}</h2>
+<p>Low Burnout</p>
+</div>
+
+</div>
+
+<div class="chart-box">
 <canvas id="chart1"></canvas>
+</div>
+
 {% endif %}
+
 </div>
 
 <div class="screen">
+
 {% if prod %}
+
 <div class="stats">
-<div class="card">High<br>{{prod.high}}</div>
-<div class="card">Medium<br>{{prod.medium}}</div>
-<div class="card">Low<br>{{prod.low}}</div>
+
+<div class="card">
+<h2>{{prod.high}}</h2>
+<p>High Productivity</p>
 </div>
-<canvas id="chart2"></canvas>
-{% endif %}
+
+<div class="card">
+<h2>{{prod.medium}}</h2>
+<p>Moderate Productivity</p>
+</div>
+
+<div class="card">
+<h2>{{prod.low}}</h2>
+<p>Low Productivity</p>
 </div>
 
 </div>
+
+<div class="chart-box">
+<canvas id="chart2"></canvas>
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
 </div>
 
 {% if table %}
-<div class="table-box">
-<table>
-<tr>{% for k in table[0].keys() %}<th>{{k}}</th>{% endfor %}</tr>
-{% for r in table[:30] %}
-<tr>{% for v in r.values() %}<td>{{v}}</td>{% endfor %}</tr>
-{% endfor %}
-</table>
+
+<div class="table-section">
+
+<div class="table-title">
+Dataset Preview
 </div>
+
+<div class="table-box">
+
+<table>
+
+<tr>
+
+{% for k in table[0].keys() %}
+<th>{{k}}</th>
+{% endfor %}
+
+</tr>
+
+{% for r in table[:50] %}
+
+<tr>
+
+{% for v in r.values() %}
+<td>{{v}}</td>
+{% endfor %}
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
 {% endif %}
 
 {% if recommendations %}
-<div style="margin-top:40px">
-<h3>Recommendations</h3>
-<ul>
+
+<div class="recommend-section">
+
+<h2 style="margin-bottom:10px">
+AI Recommendations
+</h2>
+
+<p style="color:#94a3b8">
+Strategic insights generated from burnout and productivity patterns
+</p>
+
+<div class="recommend-grid">
+
 {% for r in recommendations %}
-<li>{{r}}</li>
-{% endfor %}
-</ul>
+
+<div class="recommend-card">
+{{r}}
 </div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
 {% endif %}
 
 {% if stats %}
-<div style="display:flex;justify-content:space-between;margin-top:30px">
-<div>
-<a href="/download/burnout"><button>Download Burnout Report</button></a>
-<a href="/download/productivity"><button>Download Productivity Report</button></a>
+
+<div class="downloads">
+
+<a href="/download/burnout">
+
+<button class="download-btn">
+Download Burnout Report
+</button>
+
+</a>
+
+<a href="/download/productivity">
+
+<button class="download-btn">
+Download Productivity Report
+</button>
+
+</a>
+
 </div>
-</div>
+
 {% endif %}
 
 </div>
 
-<div id="chat" onclick="toggleChat()">Chat</div>
+<div id="chat" onclick="toggleChat()">
+AI
+</div>
 
 <div id="chatbox">
+
 <div id="chat-body"></div>
-<input id="chat_text" onkeydown="if(event.key==='Enter'){sendMessage()}">
+
+<div class="chat-input">
+
+<input id="chat_text"
+placeholder="Ask AI about the dataset..."
+onkeydown="if(event.key==='Enter'){sendMessage()}">
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+</div>
+
 </div>
 
 <script>
+
 {% if stats %}
+
 new Chart(document.getElementById('chart1'),{
+
 type:'bar',
-data:{labels:['Low','Medium','High'],datasets:[{data:[{{stats.low}},{{stats.medium}},{{stats.high}}]}]}
+
+data:{
+labels:['Low','Medium','High'],
+datasets:[{
+data:[
+{{stats.low}},
+{{stats.medium}},
+{{stats.high}}
+],
+borderRadius:14,
+barThickness:60
+}]
+},
+
+options:{
+responsive:true,
+animation:{
+duration:2000,
+easing:'easeOutQuart'
+},
+plugins:{
+legend:{display:false}
+},
+scales:{
+y:{
+grid:{color:'#1e293b'},
+ticks:{color:'#94a3b8'}
+},
+x:{
+grid:{display:false},
+ticks:{color:'#94a3b8'}
+}
+}
+}
+
 });
+
 {% endif %}
 
 {% if prod %}
+
 new Chart(document.getElementById('chart2'),{
-type:'bar',
-data:{labels:['Low','Medium','High'],datasets:[{data:[{{prod.low}},{{prod.medium}},{{prod.high}}]}]}
+
+type:'line',
+
+data:{
+labels:['Low','Medium','High'],
+datasets:[{
+data:[
+{{prod.low}},
+{{prod.medium}},
+{{prod.high}}
+],
+tension:0.4,
+fill:true
+}]
+},
+
+options:{
+responsive:true,
+animation:{
+duration:2200
+},
+plugins:{
+legend:{display:false}
+},
+scales:{
+y:{
+grid:{color:'#1e293b'},
+ticks:{color:'#94a3b8'}
+},
+x:{
+grid:{display:false},
+ticks:{color:'#94a3b8'}
+}
+}
+}
+
 });
+
 {% endif %}
+
 </script>
 
 </body>
