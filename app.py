@@ -1399,9 +1399,31 @@ el.innerHTML=Math.floor(count)
 
 }
 
-animateCounter("counter1",1250)
-animateCounter("counter2",3480)
-animateCounter("counter3",920)
+/* ================= DYNAMIC COUNTERS ================= */
+
+{% if table %}
+animateCounter("counter1", {{table|length}})
+{% else %}
+animateCounter("counter1", 0)
+{% endif %}
+
+{% if stats %}
+animateCounter(
+"counter2",
+{{stats.high + stats.medium + stats.low}}
+)
+{% else %}
+animateCounter("counter2", 0)
+{% endif %}
+
+{% if recommendations %}
+animateCounter(
+"counter3",
+{{recommendations|length}}
+)
+{% else %}
+animateCounter("counter3", 0)
+{% endif %}
 
 /* ================= PARTICLES ================= */
 
