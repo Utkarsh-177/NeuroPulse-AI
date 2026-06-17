@@ -127,7 +127,7 @@ HTML = """
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Burnout AI Enterprise</title>
+<title>NeuroPulse AI Enterprise</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -877,12 +877,12 @@ right:2.5%;
 
 <div class="hero-glow"></div>
 
-<h1>Burnout AI</h1>
+<h1>NeuroPulse AI</h1>
 
 <p class="subtitle">
-Enterprise-grade AI-powered burnout detection, productivity analytics,
-workforce monitoring, intelligent recommendations, live AI insights,
-and intelligent workforce optimization dashboard.
+AI-powered workforce wellness monitoring, productivity analytics,
+employee risk assessment, intelligent recommendations,
+and workforce optimization dashboard.
 </p>
 
 <div class="counter-grid">
