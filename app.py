@@ -104,7 +104,7 @@ def ai_chat(q, df):
             },
 
             json={
-                "model": "meta/llama-3.3-70b-instruct",
+                "model": "google/gemma-4-31b-it",
 
                 "messages": [
                     {
