@@ -92,8 +92,8 @@ def ai_chat(q, df):
 
     try:
 
-        summary = df.describe().to_string()
-        cols = ', '.join(df.columns)
+        summary = df.describe().iloc[:8, :8].to_string()
+        cols = ', '.join(df.columns[:30])
 
         res = requests.post(
             "https://integrate.api.nvidia.com/v1/chat/completions",
