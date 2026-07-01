@@ -125,7 +125,7 @@ Question:
                 "max_tokens": 200
             },
 
-            timeout=60
+            timeout=100
         )
 
 
