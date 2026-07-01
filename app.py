@@ -92,8 +92,9 @@ def ai_chat(q, df):
 
     try:
 
-        summary = df.describe().iloc[:8, :8].to_string()
-        cols = ', '.join(df.columns[:30])
+        summary = df.describe().iloc[:5, :5].to_string()
+        cols = ', '.join(df.columns[:15])
+
 
         res = requests.post(
             "https://integrate.api.nvidia.com/v1/chat/completions",
@@ -110,54 +111,44 @@ def ai_chat(q, df):
                     {
                         "role": "user",
                         "content": f"""
-Dataset Columns:
+You are a data analysis assistant.
+
+Columns:
 {cols}
 
-Dataset Summary:
+Summary:
 {summary}
 
 Question:
 {q}
+
+Answer briefly and clearly.
 """
                     }
                 ],
 
-                "max_tokens": 120
+                "max_tokens": 80
             },
 
-            timeout=100
+            timeout=60
         )
 
 
         if res.status_code != 200:
-            return f"NVIDIA API Error: {res.status_code} - {res.text}"
+            return f"NVIDIA API Error: {res.status_code}"
 
 
-        try:
-            data = res.json()
-
-        except ValueError:
-            return "Invalid response received from NVIDIA API."
-
-
-        if "choices" not in data:
-            return "AI response error."
-
+        data = res.json()
 
         return data["choices"][0]["message"]["content"]
 
 
     except requests.exceptions.Timeout:
-        return "NVIDIA API request timed out. Please try again."
-
-
-    except requests.exceptions.RequestException as e:
-        return f"API connection error: {str(e)}"
+        return "AI response timeout. Try again."
 
 
     except Exception as e:
-        return f"Unexpected error: {str(e)}"
-
+        return f"Error: {str(e)}"
 
 # ---------------- HTML ----------------
 HTML = """
