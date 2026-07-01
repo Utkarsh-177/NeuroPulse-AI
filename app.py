@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.cluster import KMeans
-import requests, os, io
+import requests, os, io, time
 
 app = Flask(__name__)
 
@@ -83,12 +83,17 @@ def recommendations(stats):
 
 # ---------------- AI CHAT ----------------
 def ai_chat(q, df):
+
+    if not API_KEY:
+        return "API key missing. Set NVIDIA API_KEY environment variable."
+
     if df is None:
         return "Upload dataset first."
-
+        
     try:
-        summary = df.describe().to_string()
+        summary = df.describe().iloc[:10,:10].to_string()
         cols = ', '.join(df.columns)
+        time.sleep(1)
 
         res = requests.post(
             "https://integrate.api.nvidia.com/v1/chat/completions",
@@ -102,10 +107,12 @@ def ai_chat(q, df):
                     "role": "user",
                     "content": f"Dataset Columns: {cols}\n\nDataset Summary:\n{summary}\n\nQuestion: {q}"
                 }],
-                "max_tokens": 300
+               "max_tokens": 200
             },
-            timeout=20
+            timeout=60
         )
+        if res.status_code != 200:
+            return f"NVIDIA API Error: {res.text}"
 
         data = res.json()
 
