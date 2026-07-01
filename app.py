@@ -89,40 +89,74 @@ def ai_chat(q, df):
 
     if df is None:
         return "Upload dataset first."
-        
+
     try:
-        summary = df.describe().iloc[:10,:10].to_string()
+
+        summary = df.describe().to_string()
         cols = ', '.join(df.columns)
-        time.sleep(1)
 
         res = requests.post(
             "https://integrate.api.nvidia.com/v1/chat/completions",
+
             headers={
                 "Authorization": f"Bearer {API_KEY}",
                 "Content-Type": "application/json"
             },
+
             json={
                 "model": "meta/llama-3.3-70b-instruct",
-                "messages": [{
-                    "role": "user",
-                    "content": f"Dataset Columns: {cols}\n\nDataset Summary:\n{summary}\n\nQuestion: {q}"
-                }],
-               "max_tokens": 200
+
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": f"""
+Dataset Columns:
+{cols}
+
+Dataset Summary:
+{summary}
+
+Question:
+{q}
+"""
+                    }
+                ],
+
+                "max_tokens": 200
             },
+
             timeout=60
         )
-        if res.status_code != 200:
-            return f"NVIDIA API Error: {res.text}"
 
-        data = res.json()
+
+        if res.status_code != 200:
+            return f"NVIDIA API Error: {res.status_code} - {res.text}"
+
+
+        try:
+            data = res.json()
+
+        except ValueError:
+            return "Invalid response received from NVIDIA API."
+
 
         if "choices" not in data:
             return "AI response error."
 
+
         return data["choices"][0]["message"]["content"]
 
+
+    except requests.exceptions.Timeout:
+        return "NVIDIA API request timed out. Please try again."
+
+
+    except requests.exceptions.RequestException as e:
+        return f"API connection error: {str(e)}"
+
+
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Unexpected error: {str(e)}"
 
 
 # ---------------- HTML ----------------
